@@ -52,18 +52,32 @@ pipeline {
             }
         }
 
+        stage('헬름 Repo 추가') {
+            steps {
+                // 
+                sh "helm repo add percona https://percona.github.io/percona-helm-charts/"
+            }
+        }
+
+        stage('헬름 Repo 업데이트') {
+            steps {
+                // 
+                sh "helm repo update"
+            }
+        }	    
         stage('헬름 템플릿 확인') {
             steps {
                 // K8S 배포
                 // sh "helm template api-tester-${CLASS_NUM} ./${CLASS_NUM}/deploy/helm/4.addition/api-tester -n anotherclass-222 --create-namespace"
-                sh "helm upgrade api-tester-${CLASS_NUM} ./${CLASS_NUM}/deploy/helm/4.addition/api-tester -n anotherclass-222 --create-namespace --install --dry-run"
+                sh "helm install ps-operator percona/ps-operator --namespace psdb --create-namespace --dry-run"
             }
         }
 
         stage('헬름 배포') {
             steps {
                 input message: '배포 시작', ok: "Yes"
-                sh "helm upgrade api-tester-${CLASS_NUM} ./${CLASS_NUM}/deploy/helm/4.addition/api-tester -n anotherclass-222 --create-namespace --install"
+                // sh "helm upgrade api-tester-${CLASS_NUM} ./${CLASS_NUM}/deploy/helm/4.addition/api-tester -n anotherclass-222 --create-namespace --install"\
+                sh "helm install ps-operator percona/ps-operator --namespace psdb --create-namespace"
             }
         }
     }
